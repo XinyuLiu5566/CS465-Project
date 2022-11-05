@@ -1,9 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MapsActivity" />
+    android:orientation="vertical" >
+    <!--
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MapsActivity" />
+    -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </TextView>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@android:color/black">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+        </TextView>
+        <Button
+            android:id="@+id/button_share_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Share Location"
+            android:textSize="12sp"
+            android:drawableTop="@drawable/share_location"
+            android:backgroundTint="@android:color/black"/>
+        <Button
+            android:id="@+id/button_call"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Call for Help"
+            android:textSize="12sp"
+            android:drawableTop="@drawable/phone"
+            android:backgroundTint="@android:color/black"/>
+        <Button
+            android:id="@+id/button_add_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Time"
+            android:textSize="12sp"
+            android:drawableTop="@drawable/add_time"
+            android:backgroundTint="@android:color/black"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+        </TextView>
+    </LinearLayout>
+</LinearLayout>
