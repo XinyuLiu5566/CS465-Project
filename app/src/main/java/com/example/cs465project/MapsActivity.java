@@ -2,7 +2,12 @@ package com.example.cs465project;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -12,10 +17,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.cs465project.databinding.ActivityMapsBinding;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
+
+    private Button shareLocationButton;
+    private Button callButton;
+    private Button addTimeButton;
+
+    private Button settingsButton;
+    private EditText whereToEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +40,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        shareLocationButton = (Button) findViewById(R.id.button_share_location);
+        callButton = (Button) findViewById(R.id.button_call);
+        addTimeButton = (Button) findViewById(R.id.button_add_time);
+        settingsButton = (Button) findViewById(R.id.button_settings);
+        whereToEditText = (EditText) findViewById(R.id.edit_text_where_to);
+
+        shareLocationButton.setOnClickListener(this);
+        callButton.setOnClickListener(this);
+        addTimeButton.setOnClickListener(this);
+        settingsButton.setOnClickListener(this);
     }
 
     /**
@@ -47,5 +70,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+
+    @Override
+    public void onClick(View v) {
+        //https://developer.android.com/develop/ui/views/components/dialogs
+        if (v.getId() == R.id.button_share_location) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("title")
+                    .setMessage("button_share_location");
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else if (v.getId() == R.id.button_call) {
+            Toast.makeText(this, "button_call", Toast.LENGTH_SHORT).show();
+        } else if (v.getId() == R.id.button_add_time) {
+            Toast.makeText(this, "button_add_time", Toast.LENGTH_SHORT).show();
+        } else if (v.getId() == R.id.button_settings) {
+            Toast.makeText(this, "button_settings", Toast.LENGTH_SHORT).show();
+        }
     }
 }
