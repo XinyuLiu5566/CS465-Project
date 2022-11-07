@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">CS465 project</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="whereTo">Where to?</string>
+    <string name="shareLocation">Share Location</string>
+    <string name="call">Call for Help</string>
+    <string name="addTime">Add Time</string>
+    <string name="settings">Settings</string>
 </resources>
