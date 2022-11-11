@@ -1,10 +1,13 @@
 package com.example.cs465project;
 
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,8 +44,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(binding.getRoot());
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         settingsButton = (Button) findViewById(R.id.button_settings);
@@ -108,7 +110,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             AlertDialog dialog = builder.create();
             dialog.show();
         } else if (v.getId() == R.id.button_call) {
-            Toast.makeText(this, "button_call", Toast.LENGTH_SHORT).show();
+            try {
+                SmsManager smsManager = SmsManager.getDefault();
+                smsManager.sendTextMessage("+17033507439", null, "android studio test sms message", null, null); //TODO EDIT
+                Toast.makeText(this, "button_call: sms sent", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(this, "button_call: failed to send sms: " + e.toString(), Toast.LENGTH_SHORT).show();
+            }
         } else if (v.getId() == R.id.button_add_time) {
             Toast.makeText(this, "button_add_time", Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.button_settings) {
