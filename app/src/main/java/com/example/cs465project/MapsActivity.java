@@ -70,7 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 while (secondsRemaining.length() < 2) {
                     secondsRemaining = "0" + secondsRemaining;
                 }
-                timeText.setText("Countdown for estimated time of arrival: " + minutesRemaining + ":" + secondsRemaining);
+                timeText.setText("Countdown to estimated time of arrival: " + minutesRemaining + ":" + secondsRemaining);
             }
 
             public void onFinish() {
