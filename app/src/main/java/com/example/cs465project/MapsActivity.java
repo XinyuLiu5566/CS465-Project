@@ -1,28 +1,40 @@
 package com.example.cs465project;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import androidx.fragment.app.FragmentActivity;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.cs465project.databinding.ActivityMapsBinding;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
+    private FusedLocationProviderClient fusedLocationClient; //https://developer.android.com/training/location/retrieve-current
 
     private Button settingsButton;
     private EditText whereToEditText;
@@ -44,6 +56,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         settingsButton = (Button) findViewById(R.id.button_settings);
         whereToEditText = (EditText) findViewById(R.id.edit_text_where_to);
@@ -88,14 +102,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            // Logic to handle location object
+
+                            LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                            mMap.addMarker(new MarkerOptions().position(currentLatLng).title("Current location"));
+
+                            LatLng destinationLatLng = new LatLng(40.107778, -88.222778); //TODO remove hardcoding to Krannert Center
+                            mMap.addMarker(new MarkerOptions().position(destinationLatLng).title("Destination"));
+
+                            LatLng southwestBoundLatLng = new LatLng(min(currentLatLng.latitude, destinationLatLng.latitude), min(currentLatLng.longitude, destinationLatLng.longitude));
+                            LatLng northeastBoundLatLng = new LatLng(max(currentLatLng.latitude, destinationLatLng.latitude), max(currentLatLng.longitude, destinationLatLng.longitude));
+                            LatLngBounds mapBound = new LatLngBounds(southwestBoundLatLng, northeastBoundLatLng);
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mapBound, 200));
+                        }
+                    }
+                });
     }
 
     @Override
