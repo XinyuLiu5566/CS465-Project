@@ -4,9 +4,11 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,12 +24,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
 
+    private Button settingsButton;
+    private EditText whereToEditText;
+
+    private TextView timeText;
+
     private Button shareLocationButton;
     private Button callButton;
     private Button addTimeButton;
-
-    private Button settingsButton;
-    private EditText whereToEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,16 +45,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        settingsButton = (Button) findViewById(R.id.button_settings);
+        whereToEditText = (EditText) findViewById(R.id.edit_text_where_to);
+        timeText = (TextView) findViewById(R.id.text_time);
         shareLocationButton = (Button) findViewById(R.id.button_share_location);
         callButton = (Button) findViewById(R.id.button_call);
         addTimeButton = (Button) findViewById(R.id.button_add_time);
-        settingsButton = (Button) findViewById(R.id.button_settings);
-        whereToEditText = (EditText) findViewById(R.id.edit_text_where_to);
 
+        settingsButton.setOnClickListener(this);
+        //whereToEditText
+        //timeText
         shareLocationButton.setOnClickListener(this);
         callButton.setOnClickListener(this);
         addTimeButton.setOnClickListener(this);
-        settingsButton.setOnClickListener(this);
+
+        new CountDownTimer(70 * 1000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                String minutesRemaining = "" + ((millisUntilFinished / 1000) / 60);
+                while (minutesRemaining.length() < 2) {
+                    minutesRemaining = "0" + minutesRemaining;
+                }
+                String secondsRemaining = "" + ((millisUntilFinished / 1000) % 60);
+                while (secondsRemaining.length() < 2) {
+                    secondsRemaining = "0" + secondsRemaining;
+                }
+                timeText.setText("Countdown for estimated time of arrival: " + minutesRemaining + ":" + secondsRemaining);
+            }
+
+            public void onFinish() {
+                timeText.setText("Estimated time of arrival has passed");
+            }
+        }.start();
     }
 
     /**
