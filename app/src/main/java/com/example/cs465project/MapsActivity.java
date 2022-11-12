@@ -24,6 +24,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -118,7 +119,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             // Logic to handle location object
 
                             LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            mMap.addMarker(new MarkerOptions().position(currentLatLng).title("Current location"));
+                            mMap.addMarker(new MarkerOptions().position(currentLatLng).title("Current location").icon(BitmapDescriptorFactory.fromResource(R.drawable.current_location))); //https://developers.google.com/maps/documentation/android-sdk/marker //https://commons.wikimedia.org/wiki/File:White_circle_in_blue_background.svg
 
                             LatLng destinationLatLng = new LatLng(40.107778, -88.222778); //TODO remove hardcoding to Krannert Center
                             mMap.addMarker(new MarkerOptions().position(destinationLatLng).title("Destination"));
@@ -127,6 +128,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             LatLng northeastBoundLatLng = new LatLng(max(currentLatLng.latitude, destinationLatLng.latitude), max(currentLatLng.longitude, destinationLatLng.longitude));
                             LatLngBounds mapBound = new LatLngBounds(southwestBoundLatLng, northeastBoundLatLng);
                             mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mapBound, 200));
+
+                            float[] results = new float[1];
+                            Location.distanceBetween(currentLatLng.latitude, currentLatLng.longitude, destinationLatLng.latitude, destinationLatLng.longitude, results);
+                            double distance = (double) results[0]; //in meters
+                            Log.d(null, "asdf: " + distance); //TODO remove
                         }
                     }
                 });
