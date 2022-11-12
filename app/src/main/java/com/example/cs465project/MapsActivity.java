@@ -3,8 +3,11 @@ package com.example.cs465project;
 import androidx.fragment.app.FragmentActivity;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -112,7 +115,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else if (v.getId() == R.id.button_add_time) {
             Toast.makeText(this, "button_add_time", Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.button_settings) {
-            Toast.makeText(this, "button_settings", Toast.LENGTH_SHORT).show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            View view = getLayoutInflater().inflate(R.layout.setting_dialog, null);
+            builder.setView(view)
+                    .setCancelable(false)
+                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    })
+            ;
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            dialog.getWindow().setLayout(1000,1200);
         }
     }
 }
