@@ -10,6 +10,7 @@ import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,6 +63,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         callButton.setOnClickListener(this);
         addTimeButton.setOnClickListener(this);
 
+
+
+
         new CountDownTimer(70 * 1000, 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -99,6 +103,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+
+    public void onCheckboxClicked(View view) {
+        if (view.getId() == R.id.contact1) {
+            final CheckBox checkBox = (CheckBox) findViewById(R.id.contact1);
+            if (checkBox.isChecked()) {
+                checkBox.setChecked(false);
+            } else {
+                checkBox.setChecked(true);
+            }
+        } else if (view.getId() == R.id.contact2) {
+            final CheckBox checkBox = (CheckBox) findViewById(R.id.contact2);
+            if (checkBox.isChecked()) {
+                checkBox.setChecked(false);
+            } else {
+                checkBox.setChecked(true);
+            }
+        } else if (view.getId() == R.id.contact3) {
+            final CheckBox checkBox = (CheckBox) findViewById(R.id.contact3);
+            if (checkBox.isChecked()) {
+                checkBox.setChecked(false);
+            } else {
+                checkBox.setChecked(true);
+            }
+        }
     }
 
     @Override
