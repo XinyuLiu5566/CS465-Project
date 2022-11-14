@@ -36,6 +36,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     private FusedLocationProviderClient fusedLocationClient; //https://developer.android.com/training/location/retrieve-current
+    private LatLng currentLatLng;
+    private LatLng destinationLatLng;
+    private double distanceToDestination = -1.0;  //in meters
 
     private Button settingsButton;
     private EditText whereToEditText;
@@ -75,7 +78,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         addTimeButton.setOnClickListener(this);
 
         new CountDownTimer(70 * 1000, 1000) {
-
             public void onTick(long millisUntilFinished) {
                 String minutesRemaining = "" + ((millisUntilFinished / 1000) / 60);
                 while (minutesRemaining.length() < 2) {
@@ -103,39 +105,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
+        destinationLatLng = new LatLng(40.107778, -88.222778); //TODO remove hardcoding to Krannert Center
 
-        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            // Logic to handle location object
+        new CountDownTimer(Long.MAX_VALUE, 5 * 1000) {
+            public void onTick(long millisUntilFinished) {
+                updateCurrentLatLngAndDistance();
+                redrawMap();
+            }
 
-                            LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            mMap.addMarker(new MarkerOptions().position(currentLatLng).title("Current location").icon(BitmapDescriptorFactory.fromResource(R.drawable.current_location))); //https://developers.google.com/maps/documentation/android-sdk/marker //https://commons.wikimedia.org/wiki/File:White_circle_in_blue_background.svg
-
-                            LatLng destinationLatLng = new LatLng(40.107778, -88.222778); //TODO remove hardcoding to Krannert Center
-                            mMap.addMarker(new MarkerOptions().position(destinationLatLng).title("Destination"));
-
-                            LatLng southwestBoundLatLng = new LatLng(min(currentLatLng.latitude, destinationLatLng.latitude), min(currentLatLng.longitude, destinationLatLng.longitude));
-                            LatLng northeastBoundLatLng = new LatLng(max(currentLatLng.latitude, destinationLatLng.latitude), max(currentLatLng.longitude, destinationLatLng.longitude));
-                            LatLngBounds mapBound = new LatLngBounds(southwestBoundLatLng, northeastBoundLatLng);
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mapBound, 200));
-
-                            float[] results = new float[1];
-                            Location.distanceBetween(currentLatLng.latitude, currentLatLng.longitude, destinationLatLng.latitude, destinationLatLng.longitude, results);
-                            double distance = (double) results[0]; //in meters
-                            Log.d(null, "asdf: " + distance); //TODO remove
-                        }
-                    }
-                });
+            public void onFinish() {
+                timeText.setText("Estimated time of arrival has passed");
+            }
+        }.start();
     }
 
     @Override
@@ -153,6 +138,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Toast.makeText(this, "button_add_time", Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.button_settings) {
             Toast.makeText(this, "button_settings", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void updateCurrentLatLngAndDistance() {
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            // Logic to handle location object
+                            currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+
+                            float[] results = new float[1];
+                            Location.distanceBetween(currentLatLng.latitude, currentLatLng.longitude, destinationLatLng.latitude, destinationLatLng.longitude, results);
+                            distanceToDestination = (double) results[0];
+                        }
+                    }
+                });
+    }
+
+    private void redrawMap() {
+        if (currentLatLng != null && destinationLatLng != null) {
+            mMap.clear();
+
+            mMap.addMarker(new MarkerOptions().position(currentLatLng).title("Current location").icon(BitmapDescriptorFactory.fromResource(R.drawable.current_location))); //https://developers.google.com/maps/documentation/android-sdk/marker //https://commons.wikimedia.org/wiki/File:White_circle_in_blue_background.svg
+
+            mMap.addMarker(new MarkerOptions().position(destinationLatLng).title("Destination"));
+
+            LatLng southwestBoundLatLng = new LatLng(min(currentLatLng.latitude, destinationLatLng.latitude), min(currentLatLng.longitude, destinationLatLng.longitude));
+            LatLng northeastBoundLatLng = new LatLng(max(currentLatLng.latitude, destinationLatLng.latitude), max(currentLatLng.longitude, destinationLatLng.longitude));
+            LatLngBounds mapBound = new LatLngBounds(southwestBoundLatLng, northeastBoundLatLng);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mapBound, 200));
         }
     }
 }
