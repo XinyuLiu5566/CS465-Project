@@ -2,9 +2,7 @@ package com.example.cs465project;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
-//import android.support.v4.content.ContextCompat;
 import android.annotation.SuppressLint;
-//import android.support.v4.app.FragmentActivity;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -81,8 +79,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         addTimeButton = (Button) findViewById(R.id.button_add_time);
 
         settingsButton.setOnClickListener(this);
-        //whereToEditText
-        //timeText
         shareLocationButton.setOnClickListener(this);
         callButton.setOnClickListener(this);
         addTimeButton.setOnClickListener(this);
@@ -135,11 +131,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-//        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this,
