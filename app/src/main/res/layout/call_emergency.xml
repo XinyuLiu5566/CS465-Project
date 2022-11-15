@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Contact Emergency\nService?"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:layout_marginTop="60dp"
+        />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="2.8in"
+        >
+    <Button
+        android:id="@+id/button_success"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="YES"
+        android:textSize="14sp"
+        android:textColor="@color/black"
+        android:drawableTop="@drawable/ic_baseline_check_box_24"
+        android:backgroundTint="@color/white"
+        android:layout_marginRight="70dp"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NO"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:drawableTop="@drawable/ic_baseline_disabled_by_default_24"
+        android:backgroundTint="@color/white"
+        />
+    </LinearLayout>
+</LinearLayout>
