@@ -7,6 +7,11 @@ import android.annotation.SuppressLint;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.view.LayoutInflater;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -18,6 +23,7 @@ import android.view.KeyEvent;
 import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -83,6 +89,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         shareLocationButton.setOnClickListener(this);
         callButton.setOnClickListener(this);
         addTimeButton.setOnClickListener(this);
+
+
+
 
         new CountDownTimer(70 * 1000, 1000) {
 
@@ -176,6 +185,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    public void onCheckboxClicked(View view) {
+        if (view.getId() == R.id.contact1) {
+            final CheckBox checkBox = (CheckBox) findViewById(R.id.contact1);
+            if (checkBox.isChecked()) {
+                checkBox.setChecked(false);
+            } else {
+                checkBox.setChecked(true);
+            }
+        } else if (view.getId() == R.id.contact2) {
+            final CheckBox checkBox = (CheckBox) findViewById(R.id.contact2);
+            if (checkBox.isChecked()) {
+                checkBox.setChecked(false);
+            } else {
+                checkBox.setChecked(true);
+            }
+        } else if (view.getId() == R.id.contact3) {
+            final CheckBox checkBox = (CheckBox) findViewById(R.id.contact3);
+            if (checkBox.isChecked()) {
+                checkBox.setChecked(false);
+            } else {
+                checkBox.setChecked(true);
+            }
+        }
+    }
+
     @Override
     public void onClick(View v) {
         //https://developer.android.com/develop/ui/views/components/dialogs
@@ -196,7 +230,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else if (v.getId() == R.id.button_add_time) {
             Toast.makeText(this, "button_add_time", Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.button_settings) {
-            Toast.makeText(this, "button_settings", Toast.LENGTH_SHORT).show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            View view = getLayoutInflater().inflate(R.layout.setting_dialog, null);
+            builder.setView(view)
+                    .setCancelable(false)
+                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    })
+            ;
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            dialog.getWindow().setLayout(1000,1200);
         }
     }
 
