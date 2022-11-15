@@ -1,10 +1,19 @@
 package com.example.cs465project;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import androidx.core.content.ContextCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 import android.annotation.SuppressLint;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.location.Location;
+import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.util.Log;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -28,6 +37,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -40,9 +52,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.cs465project.databinding.ActivityMapsBinding;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
 import java.util.List;
@@ -53,6 +67,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
+    private FusedLocationProviderClient fusedLocationClient; //https://developer.android.com/training/location/retrieve-current
+    private LatLng currentLatLng;
+    private LatLng destinationLatLng;
+    private double distanceToDestination = -1.0;  //in meters
 
     private Button settingsButton;
     private EditText whereToEditText;
@@ -78,6 +96,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         settingsButton = (Button) findViewById(R.id.button_settings);
         whereToEditText = (EditText) findViewById(R.id.edit_text_where_to);
         timeText = (TextView) findViewById(R.id.text_time);
@@ -94,7 +114,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         new CountDownTimer(70 * 1000, 1000) {
-
             public void onTick(long millisUntilFinished) {
                 String minutesRemaining = "" + ((millisUntilFinished / 1000) / 60);
                 while (minutesRemaining.length() < 2) {
@@ -154,6 +173,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
+        
+        destinationLatLng = new LatLng(40.107778, -88.222778); //TODO remove hardcoding to Krannert Center
+        
+        new CountDownTimer(Long.MAX_VALUE, 5 * 1000) {
+            public void onTick(long millisUntilFinished) {
+                updateCurrentLatLngAndDistance();
+                redrawMap();
+            }
+
+            public void onFinish() {
+                timeText.setText("Estimated time of arrival has passed");
+            }
+        }.start();
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -295,6 +327,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.addMarker(new MarkerOptions().position(latLng).title(location));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
             Toast.makeText(getApplicationContext(),address.getLatitude()+" "+address.getLongitude(),Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void updateCurrentLatLngAndDistance() {
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            // Logic to handle location object
+                            currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+
+                            float[] results = new float[1];
+                            Location.distanceBetween(currentLatLng.latitude, currentLatLng.longitude, destinationLatLng.latitude, destinationLatLng.longitude, results);
+                            distanceToDestination = (double) results[0];
+                        }
+                    }
+                });
+    }
+
+    private void redrawMap() {
+        if (currentLatLng != null && destinationLatLng != null) {
+            mMap.clear();
+
+            mMap.addMarker(new MarkerOptions().position(currentLatLng).title("Current location").icon(BitmapDescriptorFactory.fromResource(R.drawable.current_location))); //https://developers.google.com/maps/documentation/android-sdk/marker //https://commons.wikimedia.org/wiki/File:White_circle_in_blue_background.svg
+
+            mMap.addMarker(new MarkerOptions().position(destinationLatLng).title("Destination"));
+
+            LatLng southwestBoundLatLng = new LatLng(min(currentLatLng.latitude, destinationLatLng.latitude), min(currentLatLng.longitude, destinationLatLng.longitude));
+            LatLng northeastBoundLatLng = new LatLng(max(currentLatLng.latitude, destinationLatLng.latitude), max(currentLatLng.longitude, destinationLatLng.longitude));
+            LatLngBounds mapBound = new LatLngBounds(southwestBoundLatLng, northeastBoundLatLng);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mapBound, 200));
         }
     }
 }
