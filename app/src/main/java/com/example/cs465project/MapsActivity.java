@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -228,7 +229,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 SmsManager smsManager = SmsManager.getDefault();
                 String smsText = "Akita app user has shared their location with you: (Latitude, Longitude) = (" + currentLatLng.latitude + ", " + currentLatLng.longitude + ")";
                 smsManager.sendTextMessage("+17033507439", null, smsText, null, null); //TODO EDIT
-                Toast.makeText(this, smsText, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Text message sent: \"" + smsText + "\"", Toast.LENGTH_LONG).show();
                 Log.d(null, "asdf: " + smsText);
             } catch (Exception e) {
                 Toast.makeText(this, "error (failed to send sms): " + e, Toast.LENGTH_LONG).show();
@@ -236,10 +237,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         } else if (v.getId() == R.id.button_call) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("title")
-                    .setMessage("button_share_location");
+            View view = getLayoutInflater().inflate(R.layout.call_emergency, null);
+            builder.setView(view);
             AlertDialog dialog = builder.create();
             dialog.show();
+            dialog.getWindow().setLayout(1000,1200);
         } else if (v.getId() == R.id.button_add_time) {
             Toast.makeText(this, "button_add_time", Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.button_settings) {
