@@ -290,9 +290,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             destinationLatLng = new LatLng(address.getLatitude(), address.getLongitude());
             //mMap.addMarker(new MarkerOptions().position(latLng).title(location));
             //mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-            Toast.makeText(getApplicationContext(),address.getLatitude()+" "+address.getLongitude(),Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(),address.getLatitude()+" "+address.getLongitude(),Toast.LENGTH_LONG).show();
 
             redrawMap();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            View selectContactView = getLayoutInflater().inflate(R.layout.select_contact, null);
+            builder.setView(selectContactView)
+                    .setCancelable(false)
+                    .setNegativeButton("Let's Go!", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    })
+            ;
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            dialog.getWindow().setLayout(1000,1200);
         }
     }
 
