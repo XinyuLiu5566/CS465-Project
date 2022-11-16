@@ -65,7 +65,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //private Marker mCurrLocationMarker;
     private LatLng currentLatLng;
     private LatLng destinationLatLng;
-    private double distanceToDestination; //in meters
+    private double distanceToDestination = 50000000; //in meters
+    private double distanceToDestinationThreshold = 30; //in meters
 
     private TextView timeText;
 
@@ -114,7 +115,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        currentLatLng = new LatLng(40.1125, -88.2269); //TODO remove
+        currentLatLng = new LatLng(40.1092, -88.2271); //TODO remove
     }
 
     /**
@@ -222,25 +223,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             builder.setView(view);
             AlertDialog dialog = builder.create();
             dialog.show();
-            dialog.getWindow().setLayout(1000,1200);
+            //dialog.getWindow().setLayout(1000,1200);
         } else if (v.getId() == R.id.button_add_time) {
             msUntilFinished += 60 * 1000;
             setCountdownTimer();
             Toast.makeText(this, "1 minute added to countdown timer", Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.button_settings) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            View view = getLayoutInflater().inflate(R.layout.setting_dialog, null);
-            builder.setView(view)
-                    .setCancelable(false)
-                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            //View view = getLayoutInflater().inflate(R.layout.setting_dialog, null);
+            builder//.setView(view)
+                    .setTitle("Notification Settings")
+                    .setNeutralButton("Add Contact", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
+                            //TODO
+                        }
+                    })
+                    .setNegativeButton("Change Notification Settings", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            createNotificationSettingsDialog();
+                        }
+                    })
+                    .setPositiveButton("End Route", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //TODO
                         }
                     })
             ;
             AlertDialog dialog = builder.create();
             dialog.show();
-            dialog.getWindow().setLayout(1000,1200);
+            //dialog.getWindow().setLayout(1000,1200);
         }
     }
 
@@ -254,9 +268,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-        float[] distances = new float[1];
-        Location.distanceBetween(currentLatLng.latitude, currentLatLng.longitude, destinationLatLng.latitude, destinationLatLng.longitude, distances);
-        distanceToDestination = (double) distances[0];
+        calculateDistance();
+        checkIfNearDestination();
 
         redrawMap();
 
@@ -304,9 +317,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ;
             AlertDialog dialog = builder.create();
             dialog.show();
-            dialog.getWindow().setLayout(1000,1200);
+            //dialog.getWindow().setLayout(1000,1200);
 
             setCountdownTimer();
+
+            checkIfNearDestination();
         }
     }
 
@@ -384,6 +399,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.setView(selectContactView);
         AlertDialog dialog = builder.create();
         dialog.show();
-        dialog.getWindow().setLayout(1000,2000);
+        //dialog.getWindow().setLayout(1000,2000);
+    }
+
+    private void calculateDistance() {
+        try {
+            float[] distances = new float[1];
+            Location.distanceBetween(currentLatLng.latitude, currentLatLng.longitude, destinationLatLng.latitude, destinationLatLng.longitude, distances);
+            distanceToDestination = (double) distances[0];
+        } catch (Exception e) {
+            //TODO
+        }
+    }
+
+    private void checkIfNearDestination() {
+        calculateDistance();
+        Log.d(null, "asdf: dist = " + distanceToDestination);
+        if (distanceToDestination < distanceToDestinationThreshold) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            View selectContactView = getLayoutInflater().inflate(R.layout.success_arrival, null);
+            builder.setView(selectContactView);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            //dialog.getWindow().setLayout(1000,1600);
+        }
+    }
+
+    private void createNotificationSettingsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View selectContactView = getLayoutInflater().inflate(R.layout.notification_settings, null);
+        builder.setView(selectContactView);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        //dialog.getWindow().setLayout(1000,1600);
     }
 }
