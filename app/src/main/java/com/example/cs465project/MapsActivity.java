@@ -11,6 +11,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -130,6 +131,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         });
+
+        currentLatLng = new LatLng(40.1125, -88.2269); //TODO remove
     }
 
     /**
@@ -158,6 +161,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
+
+        redrawMap();
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -257,6 +262,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //    mCurrLocationMarker.remove();
         //}
         //Place current location marker
+
         currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
         float[] distances = new float[1];
@@ -269,7 +275,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
-
     }
 
     @Override
@@ -295,10 +300,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //mMap.addMarker(new MarkerOptions().position(latLng).title(location));
             //mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
             Toast.makeText(getApplicationContext(),address.getLatitude()+" "+address.getLongitude(),Toast.LENGTH_LONG).show();
+
+            redrawMap();
         }
     }
 
     private void redrawMap() {
+        Log.d(null, "asdf redrawMap: " + currentLatLng + ", " + destinationLatLng);
         if (currentLatLng == null && destinationLatLng == null) {
             //nothing
         } else if (currentLatLng != null && destinationLatLng != null) {
@@ -332,7 +340,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             //move map camera
             mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
         } else if (currentLatLng == null && destinationLatLng != null) {
             //TODO
         }
