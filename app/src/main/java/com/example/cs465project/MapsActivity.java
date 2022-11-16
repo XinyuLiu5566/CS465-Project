@@ -70,6 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private TextView timeText;
 
+    private LinearLayout bottomLinearLayout;
     private Button shareLocationButton;
     private Button callButton;
     private Button addTimeButton;
@@ -95,6 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         callButton = (Button) findViewById(R.id.button_call);
         addTimeButton = (Button) findViewById(R.id.button_add_time);
 
+        bottomLinearLayout = (LinearLayout) findViewById(R.id.bottomLinearLayout);
         settingsButton.setOnClickListener(this);
         shareLocationButton.setOnClickListener(this);
         callButton.setOnClickListener(this);
@@ -115,7 +117,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        currentLatLng = new LatLng(40.1092, -88.2271); //TODO remove
+        //currentLatLng = new LatLng(40.1092, -88.2271); //TODO remove //next to Illini Union
+        currentLatLng = new LatLng(40.1125, -88.2269); //Grainger
+
+        bottomLinearLayout.setVisibility(LinearLayout.GONE);
     }
 
     /**
@@ -322,6 +327,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             setCountdownTimer();
 
             checkIfNearDestination();
+
+            bottomLinearLayout.setVisibility(LinearLayout.VISIBLE);
+            whereToEditText.setVisibility(EditText.INVISIBLE);
         }
     }
 
