@@ -73,6 +73,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button callButton;
     private Button addTimeButton;
 
+    private CountDownTimer countdownTimer;
+    private long msUntilFinished = 15 * 60 * 1000; //milliseconds
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,28 +99,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         callButton.setOnClickListener(this);
         addTimeButton.setOnClickListener(this);
 
-
-
-
-        new CountDownTimer(70 * 1000, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-                String minutesRemaining = "" + ((millisUntilFinished / 1000) / 60);
-                while (minutesRemaining.length() < 2) {
-                    minutesRemaining = "0" + minutesRemaining;
-                }
-                String secondsRemaining = "" + ((millisUntilFinished / 1000) % 60);
-                while (secondsRemaining.length() < 2) {
-                    secondsRemaining = "0" + secondsRemaining;
-                }
-                timeText.setText("Countdown to estimated time of arrival: " + minutesRemaining + ":" + secondsRemaining);
-            }
-
-            public void onFinish() {
-                timeText.setText("Estimated time of arrival has passed");
-            }
-        }.start();
-
         whereToEditText.setOnKeyListener(new View.OnKeyListener() {
 
             @Override
@@ -134,6 +115,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         currentLatLng = new LatLng(40.1125, -88.2269); //TODO remove
+
+        setCountdownTimer();
     }
 
     /**
@@ -243,7 +226,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             dialog.show();
             dialog.getWindow().setLayout(1000,1200);
         } else if (v.getId() == R.id.button_add_time) {
-            Toast.makeText(this, "button_add_time", Toast.LENGTH_SHORT).show();
+            msUntilFinished += 60 * 1000;
+            setCountdownTimer();
+            Toast.makeText(this, "1 minute added to countdown timer", Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.button_settings) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             View view = getLayoutInflater().inflate(R.layout.setting_dialog, null);
@@ -350,5 +335,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else if (currentLatLng == null && destinationLatLng != null) {
             //TODO
         }
+    }
+
+    private void setCountdownTimer() {
+        if (countdownTimer != null) {
+            countdownTimer.cancel();
+        }
+        countdownTimer = new CountDownTimer(msUntilFinished, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                msUntilFinished = millisUntilFinished;
+
+                String minutesRemaining = "" + ((millisUntilFinished / 1000) / 60);
+                while (minutesRemaining.length() < 2) {
+                    minutesRemaining = "0" + minutesRemaining;
+                }
+                String secondsRemaining = "" + ((millisUntilFinished / 1000) % 60);
+                while (secondsRemaining.length() < 2) {
+                    secondsRemaining = "0" + secondsRemaining;
+                }
+                timeText.setText("Countdown to estimated time of arrival: " + minutesRemaining + ":" + secondsRemaining);
+            }
+
+            public void onFinish() {
+                timeText.setText("Estimated time of arrival has passed");
+            }
+        }.start();
     }
 }
