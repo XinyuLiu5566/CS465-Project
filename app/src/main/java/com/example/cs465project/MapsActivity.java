@@ -115,8 +115,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         currentLatLng = new LatLng(40.1125, -88.2269); //TODO remove
-
-        setCountdownTimer();
     }
 
     /**
@@ -307,6 +305,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             AlertDialog dialog = builder.create();
             dialog.show();
             dialog.getWindow().setLayout(1000,1200);
+
+            setCountdownTimer();
         }
     }
 
@@ -373,7 +373,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             public void onFinish() {
                 timeText.setText("Estimated time of arrival has passed");
+                createRunOutOfTimeAlert();
             }
         }.start();
+    }
+
+    private void createRunOutOfTimeAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View selectContactView = getLayoutInflater().inflate(R.layout.run_outof_time, null);
+        builder.setView(selectContactView);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getWindow().setLayout(1000,2000);
     }
 }
