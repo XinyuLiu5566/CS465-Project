@@ -40,6 +40,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.cs465project.databinding.ActivityMapsBinding;
@@ -58,8 +59,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private EditText whereToEditText;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private Location mLastLocation;
-    private Marker mCurrLocationMarker;
+    //private Location mLastLocation;
+    //private Marker mCurrLocationMarker;
+    private LatLng currentLatLng;
+    private LatLng destinationLatLng;
+    private double distanceToDestination; //in meters
 
     private TextView timeText;
 
@@ -248,22 +252,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
-
-        mLastLocation = location;
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker.remove();
-        }
+        //mLastLocation = location;
+        //if (mCurrLocationMarker != null) {
+        //    mCurrLocationMarker.remove();
+        //}
         //Place current location marker
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-        mCurrLocationMarker = mMap.addMarker(markerOptions);
+        currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-        //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+        float[] distances = new float[1];
+        Location.distanceBetween(currentLatLng.latitude, currentLatLng.longitude, destinationLatLng.latitude, destinationLatLng.longitude, distances);
+        distanceToDestination = (double) distances[0];
+
+        redrawMap();
 
         //stop location updates
         if (mGoogleApiClient != null) {
@@ -291,10 +291,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 e.printStackTrace();
             }
             Address address = addressList.get(0);
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+            destinationLatLng = new LatLng(address.getLatitude(), address.getLongitude());
+            //mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+            //mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
             Toast.makeText(getApplicationContext(),address.getLatitude()+" "+address.getLongitude(),Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void redrawMap() {
+        if (currentLatLng == null && destinationLatLng == null) {
+            //nothing
+        } else if (currentLatLng != null && destinationLatLng != null) {
+            mMap.clear();
+
+            MarkerOptions markerOptionsCurrent = new MarkerOptions();
+            markerOptionsCurrent.position(currentLatLng);
+            markerOptionsCurrent.title("Current Position");
+            markerOptionsCurrent.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            mMap.addMarker(markerOptionsCurrent);
+
+            MarkerOptions markerOptionsDestination = new MarkerOptions();
+            markerOptionsDestination.position(destinationLatLng);
+            markerOptionsDestination.title("Destination");
+            //markerOptionsDestination.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            mMap.addMarker(markerOptionsDestination);
+
+            //move map camera
+            LatLng southwestBoundLatLng = new LatLng(Math.min(currentLatLng.latitude, destinationLatLng.latitude), Math.min(currentLatLng.longitude, destinationLatLng.longitude));
+            LatLng northeastBoundLatLng = new LatLng(Math.max(currentLatLng.latitude, destinationLatLng.latitude), Math.max(currentLatLng.longitude, destinationLatLng.longitude));
+            LatLngBounds mapBound = new LatLngBounds(southwestBoundLatLng, northeastBoundLatLng);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mapBound, 200));
+        } else if (currentLatLng != null && destinationLatLng == null) {
+            mMap.clear();
+
+            MarkerOptions markerOptionsCurrent = new MarkerOptions();
+            markerOptionsCurrent.position(currentLatLng);
+            markerOptionsCurrent.title("Current Position");
+            markerOptionsCurrent.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            mMap.addMarker(markerOptionsCurrent);
+
+            //move map camera
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLng));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+        } else if (currentLatLng == null && destinationLatLng != null) {
+            //TODO
         }
     }
 }
