@@ -223,19 +223,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onClick(View v) {
         //https://developer.android.com/develop/ui/views/components/dialogs
         if (v.getId() == R.id.button_share_location) {
+            Log.d(null, "asdf: share location button");
+            try {
+                SmsManager smsManager = SmsManager.getDefault();
+                String smsText = "Akita app user has shared their location with you: (Latitude, Longitude) = (" + currentLatLng.latitude + ", " + currentLatLng.longitude + ")";
+                smsManager.sendTextMessage("+17033507439", null, smsText, null, null); //TODO EDIT
+                Toast.makeText(this, smsText, Toast.LENGTH_LONG).show();
+                Log.d(null, "asdf: " + smsText);
+            } catch (Exception e) {
+                Toast.makeText(this, "error (failed to send sms): " + e, Toast.LENGTH_LONG).show();
+                Log.d(null, "asdf: error (failed to send sms): " + e);
+            }
+        } else if (v.getId() == R.id.button_call) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("title")
                     .setMessage("button_share_location");
             AlertDialog dialog = builder.create();
             dialog.show();
-        } else if (v.getId() == R.id.button_call) {
-            try {
-                SmsManager smsManager = SmsManager.getDefault();
-                smsManager.sendTextMessage("+17033507439", null, "android studio test sms message", null, null); //TODO EDIT
-                Toast.makeText(this, "button_call: sms sent", Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                Toast.makeText(this, "button_call: failed to send sms: " + e.toString(), Toast.LENGTH_SHORT).show();
-            }
         } else if (v.getId() == R.id.button_add_time) {
             Toast.makeText(this, "button_add_time", Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.button_settings) {
@@ -306,7 +310,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void redrawMap() {
-        Log.d(null, "asdf redrawMap: " + currentLatLng + ", " + destinationLatLng);
+        //Log.d(null, "asdf redrawMap: " + currentLatLng + ", " + destinationLatLng);
         if (currentLatLng == null && destinationLatLng == null) {
             //nothing
         } else if (currentLatLng != null && destinationLatLng != null) {
