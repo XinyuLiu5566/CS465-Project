@@ -11,6 +11,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +42,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.cs465project.databinding.ActivityMapsBinding;
@@ -58,14 +61,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private EditText whereToEditText;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private Location mLastLocation;
-    private Marker mCurrLocationMarker;
+    //private Location mLastLocation;
+    //private Marker mCurrLocationMarker;
+    private LatLng currentLatLng;
+    private LatLng destinationLatLng;
+    private double distanceToDestination = 50000000; //in meters
+    private double distanceToDestinationThreshold = 30; //in meters
 
     private TextView timeText;
 
+    private LinearLayout bottomLinearLayout;
     private Button shareLocationButton;
     private Button callButton;
     private Button addTimeButton;
+
+    private CountDownTimer countdownTimer;
+    private long msUntilFinished = 15 * 60 * 1000; //milliseconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,32 +96,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         callButton = (Button) findViewById(R.id.button_call);
         addTimeButton = (Button) findViewById(R.id.button_add_time);
 
+        bottomLinearLayout = (LinearLayout) findViewById(R.id.bottomLinearLayout);
         settingsButton.setOnClickListener(this);
         shareLocationButton.setOnClickListener(this);
         callButton.setOnClickListener(this);
         addTimeButton.setOnClickListener(this);
-
-
-
-
-        new CountDownTimer(70 * 1000, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-                String minutesRemaining = "" + ((millisUntilFinished / 1000) / 60);
-                while (minutesRemaining.length() < 2) {
-                    minutesRemaining = "0" + minutesRemaining;
-                }
-                String secondsRemaining = "" + ((millisUntilFinished / 1000) % 60);
-                while (secondsRemaining.length() < 2) {
-                    secondsRemaining = "0" + secondsRemaining;
-                }
-                timeText.setText("Countdown to estimated time of arrival: " + minutesRemaining + ":" + secondsRemaining);
-            }
-
-            public void onFinish() {
-                timeText.setText("Estimated time of arrival has passed");
-            }
-        }.start();
 
         whereToEditText.setOnKeyListener(new View.OnKeyListener() {
 
@@ -126,6 +116,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         });
+
+        //currentLatLng = new LatLng(40.1092, -88.2271); //TODO remove //next to Illini Union
+        currentLatLng = new LatLng(40.1125, -88.2269); //Grainger
+
+        bottomLinearLayout.setVisibility(LinearLayout.GONE);
     }
 
     /**
@@ -154,6 +149,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
+
+        redrawMap();
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -214,62 +211,77 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onClick(View v) {
         //https://developer.android.com/develop/ui/views/components/dialogs
         if (v.getId() == R.id.button_share_location) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("title")
-                    .setMessage("button_share_location");
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        } else if (v.getId() == R.id.button_call) {
+            Log.d(null, "asdf: share location button");
             try {
                 SmsManager smsManager = SmsManager.getDefault();
-                smsManager.sendTextMessage("+17033507439", null, "android studio test sms message", null, null); //TODO EDIT
-                Toast.makeText(this, "button_call: sms sent", Toast.LENGTH_SHORT).show();
+                String smsText = "Akita app user has shared their location with you: (Latitude, Longitude) = (" + currentLatLng.latitude + ", " + currentLatLng.longitude + ")";
+                smsManager.sendTextMessage("+17033507439", null, smsText, null, null); //TODO EDIT
+                Toast.makeText(this, "Text message sent: \"" + smsText + "\"", Toast.LENGTH_LONG).show();
+                Log.d(null, "asdf: " + smsText);
             } catch (Exception e) {
-                Toast.makeText(this, "button_call: failed to send sms: " + e.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "error (failed to send sms): " + e, Toast.LENGTH_LONG).show();
+                Log.d(null, "asdf: error (failed to send sms): " + e);
             }
+        } else if (v.getId() == R.id.button_call) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            View view = getLayoutInflater().inflate(R.layout.call_emergency, null);
+            builder.setView(view);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            //dialog.getWindow().setLayout(1000,1200);
         } else if (v.getId() == R.id.button_add_time) {
-            Toast.makeText(this, "button_add_time", Toast.LENGTH_SHORT).show();
+            msUntilFinished += 60 * 1000;
+            setCountdownTimer();
+            Toast.makeText(this, "1 minute added to countdown timer", Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.button_settings) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            View view = getLayoutInflater().inflate(R.layout.setting_dialog, null);
-            builder.setView(view)
-                    .setCancelable(false)
-                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            //View view = getLayoutInflater().inflate(R.layout.setting_dialog, null);
+            builder//.setView(view)
+                    .setTitle("Notification Settings")
+                    .setNeutralButton("Add Contact", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
+                            //TODO
+                        }
+                    })
+                    .setNegativeButton("Change Notification Settings", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            createNotificationSettingsDialog();
+                        }
+                    })
+                    .setPositiveButton("End Route", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //TODO
                         }
                     })
             ;
             AlertDialog dialog = builder.create();
             dialog.show();
-            dialog.getWindow().setLayout(1000,1200);
+            //dialog.getWindow().setLayout(1000,1200);
         }
     }
 
     @Override
     public void onLocationChanged(Location location) {
-
-        mLastLocation = location;
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker.remove();
-        }
+        //mLastLocation = location;
+        //if (mCurrLocationMarker != null) {
+        //    mCurrLocationMarker.remove();
+        //}
         //Place current location marker
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-        mCurrLocationMarker = mMap.addMarker(markerOptions);
 
-        //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+        currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+
+        calculateDistance();
+        checkIfNearDestination();
+
+        redrawMap();
 
         //stop location updates
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
-
     }
 
     @Override
@@ -291,10 +303,142 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 e.printStackTrace();
             }
             Address address = addressList.get(0);
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-            Toast.makeText(getApplicationContext(),address.getLatitude()+" "+address.getLongitude(),Toast.LENGTH_LONG).show();
+            destinationLatLng = new LatLng(address.getLatitude(), address.getLongitude());
+            //mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+            //mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+            //Toast.makeText(getApplicationContext(),address.getLatitude()+" "+address.getLongitude(),Toast.LENGTH_LONG).show();
+
+            redrawMap();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            View selectContactView = getLayoutInflater().inflate(R.layout.select_contact, null);
+            builder.setView(selectContactView)
+                    .setCancelable(false)
+                    .setNegativeButton("Let's Go!", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    })
+            ;
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            //dialog.getWindow().setLayout(1000,1200);
+
+            setCountdownTimer();
+
+            checkIfNearDestination();
+
+            bottomLinearLayout.setVisibility(LinearLayout.VISIBLE);
+            whereToEditText.setVisibility(EditText.INVISIBLE);
         }
+    }
+
+    private void redrawMap() {
+        //Log.d(null, "asdf redrawMap: " + currentLatLng + ", " + destinationLatLng);
+        if (currentLatLng == null && destinationLatLng == null) {
+            //nothing
+        } else if (currentLatLng != null && destinationLatLng != null) {
+            mMap.clear();
+
+            MarkerOptions markerOptionsCurrent = new MarkerOptions();
+            markerOptionsCurrent.position(currentLatLng);
+            markerOptionsCurrent.title("Current Position");
+            markerOptionsCurrent.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            mMap.addMarker(markerOptionsCurrent);
+
+            MarkerOptions markerOptionsDestination = new MarkerOptions();
+            markerOptionsDestination.position(destinationLatLng);
+            markerOptionsDestination.title("Destination");
+            //markerOptionsDestination.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            mMap.addMarker(markerOptionsDestination);
+
+            //move map camera
+            LatLng southwestBoundLatLng = new LatLng(Math.min(currentLatLng.latitude, destinationLatLng.latitude), Math.min(currentLatLng.longitude, destinationLatLng.longitude));
+            LatLng northeastBoundLatLng = new LatLng(Math.max(currentLatLng.latitude, destinationLatLng.latitude), Math.max(currentLatLng.longitude, destinationLatLng.longitude));
+            LatLngBounds mapBound = new LatLngBounds(southwestBoundLatLng, northeastBoundLatLng);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mapBound, 200));
+        } else if (currentLatLng != null && destinationLatLng == null) {
+            mMap.clear();
+
+            MarkerOptions markerOptionsCurrent = new MarkerOptions();
+            markerOptionsCurrent.position(currentLatLng);
+            markerOptionsCurrent.title("Current Position");
+            markerOptionsCurrent.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            mMap.addMarker(markerOptionsCurrent);
+
+            //move map camera
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLng));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
+        } else if (currentLatLng == null && destinationLatLng != null) {
+            //TODO
+        }
+    }
+
+    private void setCountdownTimer() {
+        if (countdownTimer != null) {
+            countdownTimer.cancel();
+        }
+        countdownTimer = new CountDownTimer(msUntilFinished, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                msUntilFinished = millisUntilFinished;
+
+                String minutesRemaining = "" + ((millisUntilFinished / 1000) / 60);
+                while (minutesRemaining.length() < 2) {
+                    minutesRemaining = "0" + minutesRemaining;
+                }
+                String secondsRemaining = "" + ((millisUntilFinished / 1000) % 60);
+                while (secondsRemaining.length() < 2) {
+                    secondsRemaining = "0" + secondsRemaining;
+                }
+                timeText.setText("Countdown to estimated time of arrival: " + minutesRemaining + ":" + secondsRemaining);
+            }
+
+            public void onFinish() {
+                timeText.setText("Estimated time of arrival has passed");
+                createRunOutOfTimeAlert();
+            }
+        }.start();
+    }
+
+    private void createRunOutOfTimeAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View selectContactView = getLayoutInflater().inflate(R.layout.run_outof_time, null);
+        builder.setView(selectContactView);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        //dialog.getWindow().setLayout(1000,2000);
+    }
+
+    private void calculateDistance() {
+        try {
+            float[] distances = new float[1];
+            Location.distanceBetween(currentLatLng.latitude, currentLatLng.longitude, destinationLatLng.latitude, destinationLatLng.longitude, distances);
+            distanceToDestination = (double) distances[0];
+        } catch (Exception e) {
+            //TODO
+        }
+    }
+
+    private void checkIfNearDestination() {
+        calculateDistance();
+        Log.d(null, "asdf: dist = " + distanceToDestination);
+        if (distanceToDestination < distanceToDestinationThreshold) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            View selectContactView = getLayoutInflater().inflate(R.layout.success_arrival, null);
+            builder.setView(selectContactView);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            //dialog.getWindow().setLayout(1000,1600);
+        }
+    }
+
+    private void createNotificationSettingsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View selectContactView = getLayoutInflater().inflate(R.layout.notification_settings, null);
+        builder.setView(selectContactView);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        //dialog.getWindow().setLayout(1000,1600);
     }
 }

@@ -14,35 +14,43 @@
         android:gravity="center"
         android:layout_gravity="center_horizontal"
         />
+
     <CheckBox
         android:id="@+id/contact1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:checked="true"
         android:onClick="onCheckboxClicked"
         android:text="@string/contact1"
-        android:textSize="25sp"
-        android:layout_marginTop="30dp"
-        />
+        android:textSize="25sp" />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"/>
-    <CheckBox android:id="@+id/contact2"
+
+    <CheckBox
+        android:id="@+id/contact2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:checked="true"
+        android:onClick="onCheckboxClicked"
         android:text="@string/contact2"
-        android:textSize="25sp"
-        android:onClick="onCheckboxClicked"/>
+        android:textSize="25sp" />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"/>
-    <CheckBox android:id="@+id/contact3"
+
+    <CheckBox
+        android:id="@+id/contact3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:checked="true"
+        android:onClick="onCheckboxClicked"
         android:text="@string/contact3"
-        android:textSize="25sp"
-        android:onClick="onCheckboxClicked"/>
+        android:textSize="25sp" />
+    <!--
     <Button
         android:id="@+id/button_success"
         android:layout_width="300dp"
@@ -54,4 +62,5 @@
         android:textColor="@color/white"
         android:backgroundTint="@color/black"
         />
+    -->
 </LinearLayout>
