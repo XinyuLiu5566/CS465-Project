@@ -420,9 +420,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 timeText.setTextColor(Color.rgb(255,255,255));
                 whereToEditText.setVisibility(View.VISIBLE);
                 params.width = copyOfWidth;
-                // params.leftMargin = 0;
                 params.gravity = Gravity.CENTER_VERTICAL;
                 topLinearLayout.setLayoutParams(params);
+                timeText.setVisibility(TextView.GONE);
+                bottomLinearLayout.setVisibility(LinearLayout.GONE);
+
+                // Clear all markers on map
+                mMap.clear();
             }
         }.start();
     }
