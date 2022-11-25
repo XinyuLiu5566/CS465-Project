@@ -1,101 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/map"
+    android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    tools:context=".MapsActivity">
 
-    <LinearLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@color/black">
-        <Button
-            android:id="@+id/button_settings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/settings"
-            android:textSize="12sp"
-            android:textColor="@color/white"
-            android:drawableTop="@drawable/settings"
-            android:backgroundTint="@color/black"/>
-        <EditText
-            android:id="@+id/edit_text_where_to"
-            android:layout_height="match_parent"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_margin="12dp"
-            android:inputType="text"
-            android:hint="@string/whereTo"
-            android:textColorHint="@color/gray_light"
-            android:textSize="24sp"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/gray_dark"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <LinearLayout
+            android:id="@+id/top_linear_layout"
+            android:layout_width="370sp"
+            android:layout_height="70sp"
+            android:orientation="horizontal"
+            android:background="@color/black"
+            android:layout_marginTop="20sp"
+            android:gravity="center_vertical" >
+            <ImageButton
+                android:id="@+id/button_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:src="@drawable/hamburger"
+                android:backgroundTint="@color/black"/>
+            <EditText
+                android:id="@+id/edit_text_where_to"
+                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_margin="12dp"
+                android:inputType="text"
+                android:hint="@string/whereTo"
+                android:textColorHint="@color/gray_light"
+                android:textSize="24sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/gray_dark"/>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/text_time"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="40sp"
+                android:textColor="@color/white"
+                android:background="@color/black"
+                android:layout_above="@id/bottomLinearLayout"
+                />
+
+            <LinearLayout
+                android:layout_alignParentBottom="true"
+                android:id="@+id/bottomLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/black">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+                <Button
+                    android:id="@+id/button_share_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/shareLocation"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    android:drawableTop="@drawable/share_location"
+                    android:backgroundTint="@color/black" />
+                <Button
+                    android:id="@+id/button_call"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/call"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    android:drawableTop="@drawable/phone"
+                    android:backgroundTint="@color/black" />
+                <Button
+                    android:id="@+id/button_add_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/addTime"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    android:drawableTop="@drawable/add_time"
+                    android:backgroundTint="@color/black" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
-
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        tools:context=".MapsActivity" />
-
-    <TextView
-        android:id="@+id/text_time"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="18sp"
-        android:textColor="@color/white"
-        android:background="@color/black">
-    </TextView>
-
-    <LinearLayout
-        android:id="@+id/bottomLinearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@color/black">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-        </TextView>
-        <Button
-            android:id="@+id/button_share_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/shareLocation"
-            android:textSize="12sp"
-            android:textColor="@color/white"
-            android:drawableTop="@drawable/share_location"
-            android:backgroundTint="@color/black"/>
-        <Button
-            android:id="@+id/button_call"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/call"
-            android:textSize="12sp"
-            android:textColor="@color/white"
-            android:drawableTop="@drawable/phone"
-            android:backgroundTint="@color/black"/>
-        <Button
-            android:id="@+id/button_add_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/addTime"
-            android:textSize="12sp"
-            android:textColor="@color/white"
-            android:drawableTop="@drawable/add_time"
-            android:backgroundTint="@color/black"/>
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-        </TextView>
-    </LinearLayout>
-</LinearLayout>
+</fragment>

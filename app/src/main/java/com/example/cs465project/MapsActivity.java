@@ -9,9 +9,13 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -26,6 +30,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,7 +64,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
 
-    private Button settingsButton;
+    private ImageButton settingsButton;
     private EditText whereToEditText;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -67,16 +72,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng destinationLatLng;
     private double distanceToDestination = 50000000; //in meters
     private double distanceToDestinationThreshold = 30; //in meters
+    private LinearLayout.LayoutParams params;
+    private int copyOfWidth = 0;
 
     private TextView timeText;
 
     private LinearLayout bottomLinearLayout;
+    private LinearLayout topLinearLayout;
     private Button shareLocationButton;
     private Button callButton;
     private Button addTimeButton;
 
     private CountDownTimer countdownTimer;
-    private long msUntilFinished = 15 * 60 * 1000; //milliseconds
+    private long msUntilFinished = 1 * 60 * 1000; //milliseconds
 
     private CountDownTimer locationTimer;
 
@@ -95,7 +103,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        settingsButton = (Button) findViewById(R.id.button_settings);
+        settingsButton = (ImageButton) findViewById(R.id.button_settings);
         whereToEditText = (EditText) findViewById(R.id.edit_text_where_to);
         timeText = (TextView) findViewById(R.id.text_time);
         shareLocationButton = (Button) findViewById(R.id.button_share_location);
@@ -103,6 +111,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         addTimeButton = (Button) findViewById(R.id.button_add_time);
 
         bottomLinearLayout = (LinearLayout) findViewById(R.id.bottomLinearLayout);
+        topLinearLayout = (LinearLayout) findViewById(R.id.top_linear_layout);
         settingsButton.setOnClickListener(this);
         shareLocationButton.setOnClickListener(this);
         callButton.setOnClickListener(this);
@@ -152,6 +161,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         else {
             buildGoogleApiClient();
+            ActivityCompat.requestPermissions(this, new String[] {
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION },
+                    1);
             mMap.setMyLocationEnabled(true);
         }
 
@@ -324,6 +337,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             Address address = addressList.get(0);
             destinationLatLng = new LatLng(address.getLatitude(), address.getLongitude());
+            whereToEditText.setVisibility(View.GONE);
+
+            params = (LinearLayout.LayoutParams) topLinearLayout.getLayoutParams();
+            copyOfWidth = params.width;
+            params.width = 170;
+            params.gravity = Gravity.START;
+
+            // Keep the margin left for the menu when there isn't a search bar
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            params.leftMargin = (displayMetrics.widthPixels - (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 370, this.getResources().getDisplayMetrics())) / 2;
+            topLinearLayout.setLayoutParams(params);
+
             //mMap.addMarker(new MarkerOptions().position(latLng).title(location));
             //mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
             //Toast.makeText(getApplicationContext(),address.getLatitude()+" "+address.getLongitude(),Toast.LENGTH_LONG).show();
@@ -380,12 +406,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 while (secondsRemaining.length() < 2) {
                     secondsRemaining = "0" + secondsRemaining;
                 }
-                timeText.setText("Countdown to estimated time of arrival: " + minutesRemaining + ":" + secondsRemaining);
+                timeText.setText(minutesRemaining + ":" + secondsRemaining);
+
+                // Turn counter to red if the timer is under 5 minutes
+                if ((millisUntilFinished / 1000) / 60 <= 4) {
+                    timeText.setTextColor(Color.rgb(200,0,0));
+                }
             }
 
             public void onFinish() {
-                timeText.setText("Estimated time of arrival has passed");
+                timeText.setText("Time's Up!");
                 createRunOutOfTimeAlert();
+                timeText.setTextColor(Color.rgb(255,255,255));
+                whereToEditText.setVisibility(View.VISIBLE);
+                params.width = copyOfWidth;
+                // params.leftMargin = 0;
+                params.gravity = Gravity.CENTER_VERTICAL;
+                topLinearLayout.setLayoutParams(params);
             }
         }.start();
     }
