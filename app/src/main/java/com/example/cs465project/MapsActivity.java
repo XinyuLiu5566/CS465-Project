@@ -84,7 +84,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button addTimeButton;
 
     private CountDownTimer countdownTimer;
-    private long msUntilFinished = 1 * 60 * 1000; //milliseconds
+    private long msUntilFinished = 15 * 60 * 1000; //milliseconds
 
     private CountDownTimer locationTimer;
 
