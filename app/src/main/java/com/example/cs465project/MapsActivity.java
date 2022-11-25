@@ -259,6 +259,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //dialog.getWindow().setLayout(1000,1200);
         } else if (v.getId() == R.id.button_add_time) {
             msUntilFinished += 60 * 1000;
+
+            if ((msUntilFinished / 1000) / 60 > 1) {
+                timeText.setTextColor(Color.rgb(255,255,255));
+            }
+
             setCountdownTimer();
             Toast.makeText(this, "1 minute added to countdown timer", Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.button_settings) {
@@ -408,8 +413,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 timeText.setText(minutesRemaining + ":" + secondsRemaining);
 
-                // Turn counter to red if the timer is under 5 minutes
-                if ((millisUntilFinished / 1000) / 60 <= 4) {
+                // Turn counter to red if the timer is under 2 minutes
+                if ((millisUntilFinished / 1000) / 60 <= 1) {
                     timeText.setTextColor(Color.rgb(200,0,0));
                 }
             }
