@@ -66,7 +66,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng currentLatLng;
     private LatLng destinationLatLng;
     private double distanceToDestination = 50000000; //in meters
-    private double distanceToDestinationThreshold = 30; //in meters
+    private double distanceToDestinationThreshold = 300; //in meters
 
     private TextView timeText;
 
@@ -76,7 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button addTimeButton;
 
     private CountDownTimer countdownTimer;
-    private long msUntilFinished = 15 * 60 * 1000; //milliseconds
+    private long msUntilFinished = 1 * 60 * 1000; //milliseconds
 
     private CountDownTimer locationTimer;
 
@@ -230,7 +230,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             try {
                 SmsManager smsManager = SmsManager.getDefault();
                 String smsText = "Akita app user has shared their location with you: (Latitude, Longitude) = (" + currentLatLng.latitude + ", " + currentLatLng.longitude + ")";
-                smsManager.sendTextMessage("+17033507439", null, smsText, null, null); //TODO EDIT
+                smsManager.sendTextMessage("+2179794516", null, smsText, null, null); //TODO EDIT
                 Toast.makeText(this, "Text message sent: \"" + smsText + "\"", Toast.LENGTH_LONG).show();
                 Log.d(null, "asdf: " + smsText);
             } catch (Exception e) {
@@ -421,7 +421,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void checkIfNearDestination() {
         calculateDistance();
         Log.d(null, "asdf: dist = " + distanceToDestination);
+        Toast.makeText(this, "Distance to destination (m): " + distanceToDestination, Toast.LENGTH_LONG).show();
         if (distanceToDestination < distanceToDestinationThreshold) {
+            Toast.makeText(this, "Arrived at destination", Toast.LENGTH_LONG).show();
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             View selectContactView = getLayoutInflater().inflate(R.layout.success_arrival, null);
             builder.setView(selectContactView);

@@ -14,24 +14,24 @@
         android:gravity="center"
         android:layout_marginTop="60dp"
         />
+
     <Button
         android:id="@+id/button_success"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No"
-        android:textSize="14sp"
-        android:textColor="@color/black"
-        android:drawableTop="@drawable/ic_baseline_disabled_by_default_24"
-        android:backgroundTint="@color/white"
         android:layout_marginTop="70dp"
-        />
+        android:backgroundTint="@color/white"
+        android:drawableTop="@drawable/ic_baseline_disabled_by_default_24"
+        android:text="No"
+        android:textColor="@color/black"
+        android:textSize="14sp" />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+        android:drawableTop="@drawable/ic_baseline_check_box_24"
         android:text="Yes"
         android:textColor="@color/black"
-        android:textSize="14sp"
-        android:drawableTop="@drawable/ic_baseline_check_box_24"
-        android:backgroundTint="@color/white"
-        />
+        android:textSize="14sp" />
 </LinearLayout>
