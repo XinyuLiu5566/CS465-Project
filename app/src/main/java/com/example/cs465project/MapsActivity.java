@@ -166,22 +166,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fetchCurrentLocation();
         checkIfNearDestination();
 
-        mMap.addMarker(new MarkerOptions().position(currentLatLng).title("Marker in gg"));
-        mMap.addMarker(new MarkerOptions().position(destinationLatLng).title("Marker in union"));
 
-        // Getting URL to the Google Directions API
-        String url = getDirectionsUrl(currentLatLng, destinationLatLng);
 
-        DownloadTask downloadTask = new DownloadTask();
-
-        // Start downloading json data from Google Directions API
-        downloadTask.execute(url);
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16));
 
 
         locationTimer = new CountDownTimer(Long.MAX_VALUE, 5000) {
             public void onTick(long millisUntilFinished) {
                 fetchCurrentLocation();
+                // Getting URL to the Google Directions API
+                String url = getDirectionsUrl(currentLatLng, destinationLatLng);
+
+                DownloadTask downloadTask = new DownloadTask();
+
+                // Start downloading json data from Google Directions API
+                downloadTask.execute(url);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16));
                 checkIfNearDestination();
             }
 
