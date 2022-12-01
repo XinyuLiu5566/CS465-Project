@@ -41,7 +41,7 @@
                 android:inputType="text"
                 android:hint="@string/whereTo"
                 android:textColorHint="@color/gray_light"
-                android:textSize="24sp"
+                android:textSize="18sp"
                 android:textColor="@color/white"
                 android:backgroundTint="@color/gray_dark"/>
         </LinearLayout>

@@ -6,10 +6,9 @@
     >
 
     <Button
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Customize Notification Settings"
-        android:fontFamily="@font/helveticabold"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:gravity="center"
@@ -20,7 +19,7 @@
     <!--Albert-->
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:background="#98bf7f"
         android:layout_height="wrap_content"
 
@@ -34,7 +33,6 @@
             android:gravity="left"
             android:layout_gravity="left"
             android:layout_marginLeft="35dp"
-            android:fontFamily="@font/helveticabold"
             android:layout_marginBottom="3dp"/>
     </LinearLayout>
 
@@ -46,7 +44,7 @@
             android:onClick="onCheckboxClicked"
             android:text="    Start Route"
             android:textSize="18sp"
-            android:buttonTint="#79af56"/>
+            android:buttonTint="#79af56" />
 
         <CheckBox
             android:id="@+id/contact1delay"
@@ -83,7 +81,7 @@
     <!--Anjali-->
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:background="#98bf7f"
         android:layout_height="wrap_content">
         <TextView
@@ -95,7 +93,6 @@
             android:gravity="left"
             android:layout_gravity="left"
             android:layout_marginLeft="35dp"
-            android:fontFamily="@font/helveticabold"
             android:layout_marginBottom="3dp"/>
     </LinearLayout>
     <CheckBox
@@ -140,7 +137,7 @@
     <!--Mary Rose-->
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:background="#98bf7f"
         android:layout_height="wrap_content">
         <TextView
@@ -152,7 +149,6 @@
             android:gravity="left"
             android:layout_gravity="left"
             android:layout_marginLeft="35dp"
-            android:fontFamily="@font/helveticabold"
             android:layout_marginBottom="3dp"/>
     </LinearLayout>
     <CheckBox
@@ -193,4 +189,4 @@
         android:text="    Panic / Failed to Arrive"
         android:textSize="18sp"
         android:buttonTint="#79af56"/>
-</LinearLayout>
+ </LinearLayout>

@@ -65,6 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleMap mMap;
+    private boolean issearchcomplete = false;
     private ActivityMapsBinding binding;
     ArrayList markerPoints= new ArrayList();
 
@@ -176,10 +177,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // Getting URL to the Google Directions API
                 String url = getDirectionsUrl(currentLatLng, destinationLatLng);
 
-                DownloadTask downloadTask = new DownloadTask();
+               if (issearchcomplete) {
+                   DownloadTask downloadTask = new DownloadTask();
 
                 // Start downloading json data from Google Directions API
-                downloadTask.execute(url);
+                downloadTask.execute(url);}
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16));
                 checkIfNearDestination();
             }
@@ -397,6 +399,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             checkIfNearDestination();
 
             setTravelUI();
+            issearchcomplete = true;
         }
     }
 
@@ -443,7 +446,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void createRunOutOfTimeAlert() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View selectContactView = getLayoutInflater().inflate(R.layout.run_outof_time, null);
+        View selectContactView = getLayoutInflater().inflate(R.layout.failed_arrival, null);
         builder.setView(selectContactView);
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -452,7 +455,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void createNotificationSettingsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View selectContactView = getLayoutInflater().inflate(R.layout.notification_settings, null);
+        View selectContactView = getLayoutInflater().inflate(R.layout.notifications_new, null);
         builder.setView(selectContactView);
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -472,11 +475,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void checkIfNearDestination() {
         calculateDistance();
         Log.d(null, "asdf: dist = " + distanceToDestination);
-        Toast.makeText(this, "Distance to destination (m): " + distanceToDestination, Toast.LENGTH_LONG).show();
+        // Toast.makeText(this, "Distance to destination (m): " + distanceToDestination, Toast.LENGTH_LONG).show();
         if (distanceToDestination < distanceToDestinationThreshold) {
             Toast.makeText(this, "Arrived at destination", Toast.LENGTH_LONG).show();
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            View selectContactView = getLayoutInflater().inflate(R.layout.success_arrival, null);
+            View selectContactView = getLayoutInflater().inflate(R.layout.arrived_new, null);
             builder.setView(selectContactView);
             AlertDialog dialog = builder.create();
             dialog.show();
