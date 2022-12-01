@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:text="SELECT CONTACT"
         android:textColor="@color/black"
-        android:textSize="30sp"
+        android:textSize="25sp"
         android:gravity="center"
         android:layout_gravity="center_horizontal"
         />
@@ -23,7 +23,9 @@
         android:checked="true"
         android:onClick="onCheckboxClicked"
         android:text="@string/contact1"
-        android:textSize="25sp" />
+        android:textSize="25sp"
+        android:buttonTint="#79af56"
+        />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -36,7 +38,8 @@
         android:checked="true"
         android:onClick="onCheckboxClicked"
         android:text="@string/contact2"
-        android:textSize="25sp" />
+        android:textSize="25sp"
+        android:buttonTint="#79af56"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -49,7 +52,8 @@
         android:checked="true"
         android:onClick="onCheckboxClicked"
         android:text="@string/contact3"
-        android:textSize="25sp" />
+        android:textSize="25sp"
+        android:buttonTint="#79af56"/>
     <!--
     <Button
         android:id="@+id/button_success"
