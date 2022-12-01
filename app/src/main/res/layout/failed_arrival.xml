@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:scaleType="center"
         android:layout_gravity="top"
-        android:src="@drawable/FailedArrivalBG"
+        android:src="@drawable/failedarrivalbg"
         />
 
     <LinearLayout
@@ -33,7 +33,8 @@
             android:layout_height="1200dp"
             android:layout_gravity="center"
             android:background="#00000000"
-            android:drawableEnd="@drawable/Call911"
-            android:gravity="center"
+            android:drawableEnd="@drawable/call911"
+            android:gravity="center"/>
+
     </LinearLayout>
 </FrameLayout>

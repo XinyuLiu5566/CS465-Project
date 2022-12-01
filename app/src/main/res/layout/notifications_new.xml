@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Customize Notification Settings"
-        android:fontFamily="@font/HelveticaBold"
+        android:fontFamily="@font/helveticabold"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:gravity="center"
@@ -34,7 +34,7 @@
             android:gravity="left"
             android:layout_gravity="left"
             android:layout_marginLeft="35dp"
-            android:fontFamily="@font/HelveticaBold"
+            android:fontFamily="@font/helveticabold"
             android:layout_marginBottom="3dp"/>
     </LinearLayout>
 
@@ -95,7 +95,7 @@
             android:gravity="left"
             android:layout_gravity="left"
             android:layout_marginLeft="35dp"
-            android:fontFamily="@font/HelveticaBold"
+            android:fontFamily="@font/helveticabold"
             android:layout_marginBottom="3dp"/>
     </LinearLayout>
     <CheckBox
@@ -152,7 +152,7 @@
             android:gravity="left"
             android:layout_gravity="left"
             android:layout_marginLeft="35dp"
-            android:fontFamily="@font/HelveticaBold"
+            android:fontFamily="@font/helveticabold"
             android:layout_marginBottom="3dp"/>
     </LinearLayout>
     <CheckBox
@@ -193,3 +193,4 @@
         android:text="    Panic / Failed to Arrive"
         android:textSize="18sp"
         android:buttonTint="#79af56"/>
+</LinearLayout>
