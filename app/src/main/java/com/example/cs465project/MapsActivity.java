@@ -593,8 +593,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     points.add(position);
                 }
                 // Adding all the points in the route to LineOptions
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+               // mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+               // mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
                 lineOptions.addAll(points);
                 lineOptions.width(12);
                 lineOptions.color(Color.RED);
