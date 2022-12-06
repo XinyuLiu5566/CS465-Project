@@ -106,14 +106,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private FusedLocationProviderClient fusedLocationClient;
 
-    public class MainActivity extends AppCompatActivity {
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        setContentView(R.layout.activity_maps);
+        View emergencyScreen = View.inflate(this, R.layout.call_emergency, null); // grabbing the new xml file
+        callButton = (Button) emergencyScreen.findViewById(R.id.button);
+
+        callButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                Intent phoneIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:2179794516"));
+                phoneIntent.setData(Uri.parse("tel:217-979-4516"));
+
+                if (ActivityCompat.checkSelfPermission(MapsActivity.this,
+                        Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                startActivity(callIntent);
+            }
+        });
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -136,25 +153,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         callButton.setOnClickListener(this);
         addTimeButton.setOnClickListener(this);
 
-        setContentView(R.layout.activity_maps);
-         // View emergencyscreen = View.inflate(this, R.layout.call_emergency, null); // grabbing the new xml file
-          //callButton = (Button) emergencyscreen.findViewById(R.id.button);
 
-        callButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                Intent phoneIntent = new Intent(Intent.ACTION_CALL);
-                callIntent.setData(Uri.parse("tel:2179794516"));
-                phoneIntent.setData(Uri.parse("tel:217-979-4516"));
-
-                if (ActivityCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                startActivity(callIntent);
-            }
-        });
 
         whereToEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -698,4 +697,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         return data;
     }
-}}
+}
