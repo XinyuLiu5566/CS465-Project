@@ -1,9 +1,18 @@
 package com.example.cs465project;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 import android.annotation.SuppressLint;
+
+import android.content.Intent;
+import android.net.Uri;
+import androidx.appcompat.app.AppCompatActivity;
+
+
+
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -88,6 +97,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button shareLocationButton;
     private Button callButton;
     private Button addTimeButton;
+    private Button button;
 
     private CountDownTimer countdownTimer;
     private long msUntilFinished = 1 * 60 * 1000; //milliseconds
@@ -95,6 +105,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CountDownTimer locationTimer;
 
     private FusedLocationProviderClient fusedLocationClient;
+
+    public class MainActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +135,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         shareLocationButton.setOnClickListener(this);
         callButton.setOnClickListener(this);
         addTimeButton.setOnClickListener(this);
+
+        setContentView(R.layout.activity_maps);
+         // View emergencyscreen = View.inflate(this, R.layout.call_emergency, null); // grabbing the new xml file
+          //callButton = (Button) emergencyscreen.findViewById(R.id.button);
+
+        callButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                Intent phoneIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:2179794516"));
+                phoneIntent.setData(Uri.parse("tel:217-979-4516"));
+
+                if (ActivityCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                startActivity(callIntent);
+            }
+        });
 
         whereToEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -665,4 +698,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         return data;
     }
-}
+}}
