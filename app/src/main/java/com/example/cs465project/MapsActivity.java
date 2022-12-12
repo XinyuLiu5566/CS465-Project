@@ -1,9 +1,18 @@
 package com.example.cs465project;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 import android.annotation.SuppressLint;
+
+import android.content.Intent;
+import android.net.Uri;
+import androidx.appcompat.app.AppCompatActivity;
+
+
+
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -88,6 +97,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button shareLocationButton;
     private Button callButton;
     private Button addTimeButton;
+    private Button button;
 
     private CountDownTimer countdownTimer;
     private long msUntilFinished = 1 * 60 * 1000; //milliseconds
@@ -101,6 +111,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        setContentView(R.layout.activity_maps);
+        View emergencyScreen = View.inflate(this, R.layout.call_emergency, null); // grabbing the new xml file
+        callButton = (Button) emergencyScreen.findViewById(R.id.button);
+
+        callButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                Intent phoneIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:2179794516"));
+                phoneIntent.setData(Uri.parse("tel:217-979-4516"));
+
+                if (ActivityCompat.checkSelfPermission(MapsActivity.this,
+                        Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                startActivity(callIntent);
+            }
+        });
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -122,6 +152,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         shareLocationButton.setOnClickListener(this);
         callButton.setOnClickListener(this);
         addTimeButton.setOnClickListener(this);
+
+
 
         whereToEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override
